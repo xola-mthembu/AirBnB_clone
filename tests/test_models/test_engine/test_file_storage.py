@@ -51,5 +51,6 @@ class TestFileStorage(unittest.TestCase):
         self.assertIn(key, objects)
         self.assertIsInstance(objects[key], BaseModel)
 
+
 if __name__ == "__main__":
     unittest.main()
