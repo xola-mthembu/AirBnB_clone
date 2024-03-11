@@ -3,7 +3,6 @@
 Defines FileStorage class to serialize and deserialize JSON files.
 """
 import json
-import models
 
 
 class FileStorage:
@@ -13,7 +12,7 @@ class FileStorage:
 
     def all(self):
         """Returns the dictionary __objects."""
-        return FileStorage.__objects
+        return self.__objects
 
     def new(self, obj):
         """Sets in __objects the obj with key <obj class name>.id."""
@@ -23,19 +22,25 @@ class FileStorage:
     def save(self):
         """Serializes __objects to the JSON file."""
         obj_dict = {}
-        for obj in self.__objects:
-            obj_dict[obj] = self.__objects[obj].to_dict()
+        for key, obj in self.__objects.items():
+            obj_dict[key] = obj.to_dict()
         with open(self.__file_path, 'w') as f:
             json.dump(obj_dict, f)
 
     def reload(self):
         """Deserializes the JSON file to __objects."""
+        from models.base_model import BaseModel
+        # Add other model imports here if necessary, e.g.:
+        # from models.user import User
+        # from models.review import Review
+        # etc.
+
         try:
             with open(self.__file_path, 'r') as f:
                 obj_dict = json.load(f)
             for obj in obj_dict.values():
                 cls_name = obj['__class__']
-                cls = getattr(models, cls_name)
+                cls = globals()[cls_name]
                 self.new(cls(**obj))
         except FileNotFoundError:
             pass
