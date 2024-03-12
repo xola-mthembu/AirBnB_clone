@@ -35,6 +35,8 @@ class HBNBCommand(cmd.Cmd):
             cls_name, command = line.split(".", 1)
             if command == "all()":
                 self.do_all(cls_name)
+            elif command == "count()":
+                self.count_instances(cls_name)
             else:
                 print("*** Unknown syntax:", line)
         except Exception as e:
@@ -49,6 +51,14 @@ class HBNBCommand(cmd.Cmd):
             print(filtered_objs)
         else:
             print("** class doesn't exist **")
+
+    def count_instances(self, class_name):
+        """Count the number of instances of a given class."""
+        count = 0
+        for obj in storage.all().values():
+            if type(obj).__name__ == class_name:
+                count += 1
+        print(count)
 
     # Include other command methods like do_create, do_show, etc.
 
