@@ -50,6 +50,8 @@ class HBNBCommand(cmd.Cmd):
             self.do_show(f"{cls_name} {args}")
         elif command == "destroy" and args:
             self.do_destroy(f"{cls_name} {args}")
+        elif command == "update" and args:
+            self.do_update(f"{cls_name} {args}")
         else:
             print(f"*** Unknown syntax: {cls_name}.{command}({args})")
 
@@ -89,6 +91,22 @@ class HBNBCommand(cmd.Cmd):
         elif args[0] in HBNBCommand.class_dict:
             self.destroy_instance(args)
 
+    def do_update(self, arg):
+        """Updates an instance based on class name and id."""
+        args = arg.split()
+        if len(args) < 2:
+            msg = "** instance id missing **" if len(args) == 1 \
+                else "** class name missing **"
+            print(msg)
+        elif len(args) < 3:
+            print("** attribute name missing **")
+        elif len(args) < 4:
+            print("** value missing **")
+        elif args[0] in HBNBCommand.class_dict:
+            self.update_instance(args)
+        else:
+            print("** no instance found **")
+
     def show_instance(self, args):
         """Show an instance based on the provided arguments."""
         all_objs = storage.all()
@@ -105,6 +123,17 @@ class HBNBCommand(cmd.Cmd):
         if key in all_objs:
             del all_objs[key]
             storage.save()
+        else:
+            print("** no instance found **")
+
+    def update_instance(self, args):
+        """Update an instance based on the provided arguments."""
+        all_objs = storage.all()
+        key = f"{args[0]}.{args[1]}"
+        if key in all_objs:
+            obj = all_objs[key]
+            setattr(obj, args[2], eval(args[3]))
+            obj.save()
         else:
             print("** no instance found **")
 
