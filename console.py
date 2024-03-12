@@ -4,6 +4,7 @@ Entry point of the command interpreter.
 """
 
 import cmd
+import ast
 from models import storage
 from models.base_model import BaseModel
 from models.user import User
@@ -51,7 +52,12 @@ class HBNBCommand(cmd.Cmd):
         elif command == "destroy" and args:
             self.do_destroy(f"{cls_name} {args}")
         elif command == "update" and args:
-            self.do_update(f"{cls_name} {args}")
+            args_list = args.split(", ", 1)
+            if len(args_list) == 2:
+                obj_id, obj_dict = args_list
+                self.do_update(f"{cls_name} {obj_id} {obj_dict}")
+            else:
+                self.do_update(f"{cls_name} {args}")
         else:
             print(f"*** Unknown syntax: {cls_name}.{command}({args})")
 
@@ -103,7 +109,11 @@ class HBNBCommand(cmd.Cmd):
         elif len(args) < 4:
             print("** value missing **")
         elif args[0] in HBNBCommand.class_dict:
-            self.update_instance(args)
+            if args[3].startswith("{") and args[3].endswith("}"):
+                obj_dict = ast.literal_eval(args[3])
+                self.update_instance_dict(args[0], args[1], obj_dict)
+            else:
+                self.update_instance(args)
         else:
             print("** no instance found **")
 
@@ -133,6 +143,18 @@ class HBNBCommand(cmd.Cmd):
         if key in all_objs:
             obj = all_objs[key]
             setattr(obj, args[2], eval(args[3]))
+            obj.save()
+        else:
+            print("** no instance found **")
+
+    def update_instance_dict(self, cls_name, obj_id, obj_dict):
+        """Update an instance based on the provided dictionary."""
+        all_objs = storage.all()
+        key = f"{cls_name}.{obj_id}"
+        if key in all_objs:
+            obj = all_objs[key]
+            for attr_name, attr_value in obj_dict.items():
+                setattr(obj, attr_name, attr_value)
             obj.save()
         else:
             print("** no instance found **")
