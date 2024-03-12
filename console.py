@@ -39,8 +39,8 @@ class HBNBCommand(cmd.Cmd):
                 self.count_instances(cls_name)
             else:
                 print("*** Unknown syntax:", line)
-        except Exception as e:
-            print(e)
+        except ValueError:
+            print("*** Unknown syntax:", line)
 
     def do_all(self, arg):
         """Prints all instances based or not on the class name."""
@@ -56,7 +56,7 @@ class HBNBCommand(cmd.Cmd):
         """Count the number of instances of a given class."""
         count = 0
         for obj in storage.all().values():
-            if type(obj).__name__ == class_name:
+            if obj.__class__.__name__ == class_name:
                 count += 1
         print(count)
 
