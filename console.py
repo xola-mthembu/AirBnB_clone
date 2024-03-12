@@ -2,6 +2,7 @@
 """
 Entry point of the command interpreter.
 """
+
 import cmd
 from models import storage
 from models.base_model import BaseModel
@@ -26,7 +27,7 @@ class HBNBCommand(cmd.Cmd):
         return True
 
     def emptyline(self):
-        """An empty line + ENTER shouldn’t execute anything."""
+        """An empty line + ENTER shouldn't execute anything."""
         pass
 
     def default(self, line):
@@ -46,8 +47,9 @@ class HBNBCommand(cmd.Cmd):
         elif command == "count":
             self.count_instances(cls_name)
         elif command == "show" and args:
-            arg_cleaned = args.replace('"', '')  # Removes double quotes
-            self.do_show(f"{cls_name} {arg_cleaned}")
+            self.do_show(f"{cls_name} {args}")
+        elif command == "destroy" and args:
+            self.do_destroy(f"{cls_name} {args}")
         else:
             print(f"*** Unknown syntax: {cls_name}.{command}({args})")
 
@@ -55,9 +57,9 @@ class HBNBCommand(cmd.Cmd):
         """Prints all instances based or not on the class name."""
         all_objs = storage.all()
         if not arg or arg in HBNBCommand.class_dict:
-            filtered_objs = [str(obj) for obj in all_objs.values()
-                             if not arg or obj.__class__.__name__ == arg]
-            print(filtered_objs)
+            objs = [str(obj) for obj in all_objs.values()
+                    if not arg or obj.__class__.__name__ == arg]
+            print(objs)
         else:
             print("** class doesn't exist **")
 
@@ -71,31 +73,51 @@ class HBNBCommand(cmd.Cmd):
         """Show an instance based on class name and id."""
         args = arg.split()
         if len(args) < 2:
-            msg = "** instance id missing **" if len(args) == 1 else "** class name missing **"
+            msg = "** instance id missing **" if len(args) == 1 \
+                else "** class name missing **"
             print(msg)
         elif args[0] in HBNBCommand.class_dict:
             self.show_instance(args)
 
+    def do_destroy(self, arg):
+        """Destroys an instance based on class name and id."""
+        args = arg.split()
+        if len(args) < 2:
+            msg = "** instance id missing **" if len(args) == 1 \
+                else "** class name missing **"
+            print(msg)
+        elif args[0] in HBNBCommand.class_dict:
+            self.destroy_instance(args)
+
     def show_instance(self, args):
         """Show an instance based on the provided arguments."""
         all_objs = storage.all()
-        key = "{}.{}".format(args[0], args[1])
+        key = f"{args[0]}.{args[1]}"
         if key in all_objs:
             print(all_objs[key])
         else:
             print("** no instance found **")
 
+    def destroy_instance(self, args):
+        """Destroy an instance based on the provided arguments."""
+        all_objs = storage.all()
+        key = f"{args[0]}.{args[1]}"
+        if key in all_objs:
+            del all_objs[key]
+            storage.save()
+        else:
+            print("** no instance found **")
 
-# Dictionary to map class names to classes
-HBNBCommand.class_dict = {
-    'BaseModel': BaseModel,
-    'User': User,
-    'State': State,
-    'City': City,
-    'Amenity': Amenity,
-    'Place': Place,
-    'Review': Review
-}
+    # Dictionary to map class names to classes
+    class_dict = {
+        'BaseModel': BaseModel,
+        'User': User,
+        'State': State,
+        'City': City,
+        'Amenity': Amenity,
+        'Place': Place,
+        'Review': Review
+    }
 
 
 if __name__ == '__main__':
