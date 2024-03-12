@@ -5,6 +5,7 @@ Entry point of the command interpreter.
 import cmd
 from models import storage
 from models.base_model import BaseModel
+from models.user import User  # Import the User class
 
 
 class HBNBCommand(cmd.Cmd):
@@ -24,19 +25,22 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, arg):
-        """Creates a new instance of BaseModel, saves it, prints the id."""
+        """Create a new instance, save it, and print the id."""
         if not arg:
             print("** class name missing **")
             return
         try:
+            if arg not in ['BaseModel', 'User']:
+                print("** class doesn't exist **")
+                return
             new_instance = eval(f"{arg}()")
             new_instance.save()
             print(new_instance.id)
-        except Exception:
-            print("** class doesn't exist **")
+        except Exception as e:
+            print(e)
 
     def do_show(self, arg):
-        """Shows an instance based on class name and id."""
+        """Show an instance based on class name and id."""
         args = arg.split()
         if len(args) == 0:
             print("** class name missing **")
@@ -52,7 +56,7 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
 
     def do_destroy(self, arg):
-        """Deletes an instance based on class name and id."""
+        """Delete an instance based on class name and id."""
         args = arg.split()
         if len(args) == 0:
             print("** class name missing **")
@@ -69,18 +73,20 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
 
     def do_all(self, arg):
-        """Prints all instances based or not on the class name."""
+        """Print instances based on class name or not."""
         args = arg.split()
         all_objs = storage.all()
         class_names = [cls.__name__ for cls in BaseModel.__subclasses__()]
-        class_names.append('BaseModel')
+        class_names += ['BaseModel', 'User']
         if not arg or args[0] in class_names:
-            print([str(obj) for obj in all_objs.values()])
+            filtered_objs = [str(obj) for obj in all_objs.values()
+                             if not arg or type(obj).__name__ == args[0]]
+            print(filtered_objs)
         else:
             print("** class doesn't exist **")
 
     def do_update(self, arg):
-        """Updates an instance based on class name and id."""
+        """Update an instance based on class name and id."""
         args = arg.split()
         if len(args) == 0:
             print("** class name missing **")

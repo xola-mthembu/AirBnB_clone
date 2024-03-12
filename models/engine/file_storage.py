@@ -4,6 +4,7 @@ Defines FileStorage class to serialize and deserialize JSON files.
 """
 import json
 from models.base_model import BaseModel
+from models.user import User  # Import User class
 
 
 class FileStorage:
@@ -12,37 +13,38 @@ class FileStorage:
     __file_path = "file.json"
     __objects = {}
 
-    # Class dictionary mapping to ensure the correct class is called.
+    # Updated class dictionary mapping to include the User class
     class_dict = {
         'BaseModel': BaseModel,
-        # Include other model classes here as needed
+        'User': User
     }
 
     def all(self):
         """Returns the dictionary __objects."""
-        return self.__objects
+        return FileStorage.__objects
 
     def new(self, obj):
         """Sets in __objects the obj with key <obj class name>.id."""
         key = f"{obj.__class__.__name__}.{obj.id}"
-        self.__objects[key] = obj
+        FileStorage.__objects[key] = obj
 
     def save(self):
         """Serializes __objects to the JSON file (path: __file_path)."""
         obj_dict = {
-            obj: self.__objects[obj].to_dict() for obj in self.__objects
+            key: obj.to_dict() for key, obj in FileStorage.__objects.items()
         }
-        with open(self.__file_path, 'w') as f:
+        with open(FileStorage.__file_path, 'w') as f:
             json.dump(obj_dict, f)
 
     def reload(self):
         """Deserializes the JSON file to __objects."""
         try:
-            with open(self.__file_path, 'r') as f:
+            with open(FileStorage.__file_path, 'r') as f:
                 obj_dict = json.load(f)
             for obj in obj_dict.values():
                 cls_name = obj['__class__']
-                cls = self.class_dict[cls_name]
-                self.new(cls(**obj))
+                cls = FileStorage.class_dict.get(cls_name)
+                if cls:
+                    self.new(cls(**obj))
         except FileNotFoundError:
             pass
