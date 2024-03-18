@@ -1,0 +1,35 @@
+.filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+    border: 1px solid #DDDDDD;
+    border-radius: 4px;
+}
+
+.locations, .amenities {
+    height: 100%;
+    width: 25%;
+    position: relative;
+}
+
+.popover {
+    display: none;
+    position: absolute;
+    background-color: #FAFAFA;
+    width: 100%;
+    border: 1px solid #DDDDDD;
+    border-radius: 4px;
+    list-style: none;
+    padding: 0;
+}
+
+.locations:hover .popover,
+.amenities:hover .popover {
+    display: block;
+}
+
+.locations h2,
+.amenities h2 {
+    font-size: 16px;
+}
