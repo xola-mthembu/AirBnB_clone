@@ -6,6 +6,6 @@ from models.base_model import BaseModel
 
 
 class Review(BaseModel):
-    place_id = ""   # Will be the Place.id
-    user_id = ""    # Will be the User.id
+    place_id = ""
+    user_id = ""
     text = ""
