@@ -1,0 +1,3 @@
+[submodule "web_static/web_static/W3C-Validator"]
+	path = web_static/web_static/W3C-Validator
+	url = https://github.com/alx-tools/W3C-Validator
