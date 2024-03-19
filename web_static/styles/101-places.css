@@ -1,0 +1,12 @@
+.places {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.places article {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    width: calc(33.333% - 20px);
+}
