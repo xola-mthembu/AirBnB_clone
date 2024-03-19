@@ -1,0 +1,33 @@
+body {
+    color: #484848; /* Dark grey color for good contrast on a light background */
+    background-color: #FAFAFA; /* Very light grey (almost white) background */
+    font-family: Arial, sans-serif; /* Sans-serif font for better readability */
+}
+
+a, button {
+    color: #276678; /* Color that stands out for links and buttons */
+}
+
+a:hover, button:hover {
+    background-color: #BCECE0; /* Subtle background color change on hover */
+}
+
+a:focus, button:focus {
+    outline: 3px solid #76C893; /* Greenish outline for focused elements */
+    outline-offset: 2px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Arial, sans-serif;
+}
+
+p, li {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+header, nav, main, footer {
+    padding: 1rem;
+    margin: auto;
+    max-width: 960px;
+}
